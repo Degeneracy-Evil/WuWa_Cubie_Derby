@@ -1,15 +1,18 @@
 from __future__ import annotations
-import random
 from typing import Any
 from src.abilities.base import AbilityBase
 
 
-class Fei2Ability(AbilityBase):
-    player_name = "菲"
+class XiaoAbility(AbilityBase):
+    player_name = "咲"
 
     def on_dice_bonus(self, actor_name: str, base_dice: int, current: int, ctx: dict[str, Any]) -> int:
         if actor_name != self.player_name:
             return 0
-        if random.random() < 0.5:
-            return 1
+        base_dices = ctx.get("base_dices")
+        if base_dices is None:
+            return 0
+        min_dice = min(base_dices.values())
+        if base_dice == min_dice:
+            return 2
         return 0

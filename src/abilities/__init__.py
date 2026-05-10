@@ -1,8 +1,8 @@
-from src.abilities.lu import LuAbility
-from src.abilities.xi import XiAbility
-from src.abilities.ya import YaAbility
-from src.abilities.fei import FeiAbility
-from src.abilities.ka import KaAbility
-from src.abilities.fei2 import Fei2Ability
+from src.abilities.xiao import XiaoAbility
+from src.abilities.mo import MoAbility
+from src.abilities.lin import LinAbility
+from src.abilities.ai import AiAbility
+from src.abilities.an import AnAbility
+from src.abilities.ke import KeAbility
 
-ALL_ABILITIES = [LuAbility, XiAbility, YaAbility, FeiAbility, KaAbility, Fei2Ability]
+ALL_ABILITIES = [XiaoAbility, MoAbility, LinAbility, AiAbility, AnAbility, KeAbility]

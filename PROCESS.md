@@ -119,3 +119,71 @@ python3 -m src.main                    # 默认1M局，自动检测核数
 python3 -m src.main -n 10000000        # 10M局
 python3 -m src.main -n 100000000 -w 64 # 100M局，64进程
 ```
+
+---
+
+## 2026-05-10 能力系统模块化重构
+
+### 重构目标
+
+使添加新选手只需创建一个ability文件并注册，零改动game.py/player.py。
+
+### 重构内容
+
+- [x] `PlayerState`移除能力专属字段（met_x, ka_triggered, prev_base_dice等）
+- [x] `AbilityBase`新增钩子：`on_dice_finalize`（骰子最终变换，如max(1,x-1)）、`on_stack_event`（堆叠事件，如绯遇X）
+- [x] `game.py`两阶段骰子结算：先加成（on_dice_bonus）→再变换（on_dice_finalize）
+- [x] `game.py`在所有堆叠变更点发射stack_event
+- [x] `NORMAL_NAMES`从ability注册表推导，不再硬编码
+- [x] 各能力自持状态（绯的met_round、卡的activated、娅的prev_base等）
+- [x] 移除game.py中所有能力特殊处理代码（_fei缓存、_xi_ability缓存、绯相遇硬编码、西惩罚特殊处理）
+- [x] 19项测试全部通过，胜率与重构前一致
+
+---
+
+## 2026-05-10 新选手接入
+
+### 新选手规则澄清
+
+与用户进行两轮问答，澄清了以下歧义：
+
+| 选手 | 澄清内容 |
+|------|---------|
+| 咲 | 「本轮所有点数」=所有选手基础骰；额外前进2格为步数+2（骰子加成） |
+| 莫 | 逐轮递减循环：第1轮3→第2轮2→第3轮1→第4轮3... |
+| 琳 | 60%双倍/20%不动(步数0)/20%正常，三结果互斥；双倍替代基本骰 |
+| 爱 | 到达/路过位置16触发；瞬移（原位消失+目标顶部）；最近=赛道距离；每场1次 |
+| 岸 | 骰子只有2和3，均匀随机 |
+| 珂 | 28%双倍/72%正常；双倍仅影响移动步数，基本骰不变 |
+
+### 新增钩子
+
+- `on_roll_dice(actor_name, default_roll, ctx) -> int | None`：自定义骰子，返回None使用默认
+- `on_step_end(mover_name, from_pos, to_pos, ctx) -> bool`：每步结束后触发，返回True中断移动
+
+### 实现的6个能力模块
+
+| 模块 | 选手 | 钩子 |
+|------|------|------|
+| xiao.py | 咲 | on_dice_bonus |
+| mo.py | 莫 | on_roll_dice |
+| lin.py | 琳 | on_dice_bonus + on_dice_finalize |
+| ai.py | 爱 | on_step_end |
+| an.py | 岸 | on_roll_dice |
+| ke.py | 珂 | on_dice_bonus |
+
+### 琳/珂能力修正
+
+- **问题**：琳和珂使用`on_roll_dice`将基本骰替换为双倍值，导致基本骰发生变化
+- **修正**：基本骰不变，双倍仅影响移动步数。改用`on_dice_bonus`返回`base_dice`（步数=base+base=2×base），琳的20%不动用`on_dice_finalize`返回0
+
+### 10M局结果（新选手，修正后）
+
+| 选手 | 胜场 | 胜率 |
+|------|------|------|
+| 琳 | 2,218,559 | 22.19% |
+| 咲 | 2,177,566 | 21.78% |
+| 岸 | 1,726,298 | 17.26% |
+| 珂 | 1,679,307 | 16.79% |
+| 爱 | 1,166,588 | 11.67% |
+| 莫 | 1,031,682 | 10.32% |

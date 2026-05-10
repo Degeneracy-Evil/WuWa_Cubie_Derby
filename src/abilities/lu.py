@@ -1,5 +1,6 @@
 from __future__ import annotations
 import random
+from typing import Any
 from src.abilities.base import AbilityBase
 from src.track import DeviceType
 
@@ -7,10 +8,8 @@ from src.track import DeviceType
 class LuAbility(AbilityBase):
     player_name = "陆"
 
-    def on_device_trigger(self, device_type: DeviceType, state, game_ctx) -> int:
-        if state.name != self.player_name:
-            return 0
-        if not game_ctx.get("is_mover", False):
+    def on_device_trigger(self, device_type: DeviceType, mover_name: str, ctx: dict[str, Any]) -> int:
+        if mover_name != self.player_name:
             return 0
         if device_type == DeviceType.FORWARD:
             return 3

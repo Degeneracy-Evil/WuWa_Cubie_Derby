@@ -1,6 +1,7 @@
 import sys
 import time
 import multiprocessing as mp
+from src.game import NORMAL_NAMES
 from src.simulator import Simulator
 
 
@@ -31,7 +32,7 @@ def main():
 
     print(f"\n{'Player':<6} {'Wins':>10} {'Win Rate':>10}")
     print("-" * 28)
-    for name in ["陆", "西", "娅", "绯", "卡", "菲"]:
+    for name in NORMAL_NAMES:
         wins = sim.win_counts.get(name, 0)
         rate = rates.get(name, 0.0)
         print(f"{name:<6} {wins:>10,} {rate:>10.4%}")
