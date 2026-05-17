@@ -6,31 +6,32 @@
 
 | 文件 | 说明 |
 |------|------|
-| [规则.md](规则.md) | 完整规则文档（权威规范） |
-| [新选手.md](新选手.md) | 当前赛季选手能力 |
-| [退役选手.md](退役选手.md) | 退役选手档案 |
-| [PROCESS.md](PROCESS.md) | 开发进程与基准测试 |
-| [TODO.md](TODO.md) | 任务追踪 |
+| [RULE.md](docs/RULE.md) | 完整规则文档（权威规范） |
+| [选手.md](新选手.md) | 所有选手能力 |
+| [PROCESS.md](docs/PROCESS.md) | 开发进程与基准测试 |
+| [TODO.md](docs/TODO.md) | 任务追踪 |
 | [AGENTS.md](AGENTS.md) | Agent导航——架构、文件地图、添加选手 |
 
 ## 特性
 
-- **多进程并行**——支持120+核心，150K+局/秒
+- **多进程并行**——支持多进程并行，150K+局/秒
 - **模块化能力系统**——每位选手的能力为独立模块(`src/abilities/`)，添加新选手仅需一个文件+注册
 - **完整规则合规**——堆叠、装置链、X传送、所有能力均对照规范验证
-- **零外部依赖**——仅使用Python 3.13标准库
+- **零外部依赖**——仅使用Python 3标准库
 
 ## 运行
 
+要求：python >= 3.13
+
 ```bash
 # 默认：1M局，自动检测核心数
-.venv/bin/python -m src.main
+python -m src.main
 
 # 10M局
-.venv/bin/python -m src.main -n 10000000
+python -m src.main -n 10000000
 
-# 100M局，120进程
-.venv/bin/python -m src.main -n 100000000 -w 120
+# 100M局，64进程
+python -m src.main -n 100000000 -w 64
 ```
 
 ## 当前赛季胜率
